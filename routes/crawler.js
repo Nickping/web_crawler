@@ -6,6 +6,7 @@ var smtpPool = require('nodemailer-smtp-pool');
 var htmlToJson = require('html-to-json');
 var nodemailer = require('nodemailer');
 var intervalFunction;
+var config = require('../bin/config');
 var found = false;
 var wordCount = 0;
 var url;
@@ -13,7 +14,7 @@ var url;
 //var url = 'http://www.ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview&_EXT_MIRRORBBS_sCategory2=%EA%B5%AD%EC%A0%9C%EA%B5%90%EB%A5%98';
 var Crawler = require('crawler');
 
-function checkvalidation(items, word, from, passwd, to) {
+function checkvalidation(items, word, from, to) {
 
     console.log(items);
 
@@ -22,14 +23,14 @@ function checkvalidation(items, word, from, passwd, to) {
     if (items[0].title.indexOf(word) != -1) {
         console.log('////////////');
         console.log(items[0].title);
-
+        console.log(config.passwd);
         var smtpTransport = nodemailer.createTransport(smtpPool({
             service: 'Gmail',
             host : 'localhost',
             port : '465',
             auth: {
                 user: from,
-                pass: passwd
+                pass: config.passwd
             }
         }));
 
@@ -57,13 +58,13 @@ function checkvalidation(items, word, from, passwd, to) {
 }
 
 
-function loop(url, word, from, passwd, to) {
+function loop(url, word, from, to) {
 
     console.log('loop');
     console.log(url);
     console.log(word);
     console.log(from);
-    console.log(passwd);
+    //console.log(passwd);
     console.log(to);
     var c = new Crawler({
 
@@ -98,7 +99,7 @@ function loop(url, word, from, passwd, to) {
                             if (items[i] !== undefined)
                                 arr.push(items[i]);
                         }
-                        checkvalidation(arr, word, from, passwd, to);
+                        checkvalidation(arr, word, from,  to);
                     }, function (err) {
                         console.log(err);
                     });
@@ -114,7 +115,7 @@ function loop(url, word, from, passwd, to) {
 }
 
 
-function doLoop(url, word, from, passwd, to) {
+function doLoop(url, word, from, to) {
 
     // setInterval(function(){
     //     console.log('hi');
@@ -123,8 +124,8 @@ function doLoop(url, word, from, passwd, to) {
     //loop(url, word, from, passwd, to);
 
      intervalFunction= setInterval(function () {
-        loop(url, word, from, passwd, to)
-    }, 7000);
+        loop(url, word, from, to)
+    }, 3000);
 
 
 }
@@ -134,12 +135,12 @@ router.post('/setAlram', (req, res) => {
     url = req.body.url;
     var word = req.body.word;
     var from = req.body.from;
-    var passwd = req.body.passwd;
+    //var passwd = req.body.passwd;
     var to = req.body.to;
     console.log(url);
     res.status(200);
 
-    doLoop(url, word, from, passwd, to);
+    doLoop(url, word, from,  to);
     // while (!found)
     //     setTimeout(loop(),5000);
     //

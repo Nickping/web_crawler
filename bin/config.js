@@ -1,3 +1,4 @@
 var config_port = 3001;
-
-module.exports = config_port;
+var passwd = 'dmlwns327!';
+module.exports.config_port = config_port;
+module.exports.passwd = passwd;
