@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var cheerio = require('cheerio');
 var request = require('request');
+var smtpPool = require('nodemailer-smtp-pool');
 var htmlToJson = require('html-to-json');
 var nodemailer = require('nodemailer');
 var intervalFunction;
@@ -22,28 +23,30 @@ function checkvalidation(items, word, from, passwd, to) {
         console.log('////////////');
         console.log(items[0].title);
 
-        // var smtpTransport = nodemailer.createTransport("SMTP", {
-        //     service: 'Gmail',
-        //     auth: {
-        //         user: from,
-        //         pass: passwd
-        //     }
-        // });
-        //
-        // var mailOption = {
-        //     from: from,
-        //     to: to,
-        //     subject: 'soongsil mail alram',
-        //     text: word + 'found'
-        // }
-        //
-        // smtpTransport.sendMail(mailOption, (err, response) => {
-        //     if (err) console.log(err);
-        //     else
-        //         console.log("Mail send to ", to);
-        //     smtpTransport.close();
-             //clearInterval(intervalFunction);
-        // });
+        var smtpTransport = nodemailer.createTransport(smtpPool({
+            service: 'Gmail',
+            host : 'localhost',
+            port : '465',
+            auth: {
+                user: from,
+                pass: passwd
+            }
+        }));
+
+        var mailOption = {
+            from: from,
+            to: to,
+            subject: 'soongsil mail alram',
+            text: 'soongsil mail alram 에서 보낸 메일\n' + items[0].title + '의 공지사항이 등록되었습니다.\n'+items[0].url
+        }
+
+        smtpTransport.sendMail(mailOption, (err, response) => {
+            if (err) console.log(err);
+            else
+                console.log("Mail send to ", to);
+            smtpTransport.close();
+             clearInterval(intervalFunction);
+        });
 
         //found. send email
         console.log('end');
