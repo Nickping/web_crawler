@@ -24,7 +24,16 @@ var c = new Crawler({
         else {
             var $ = res.$;
             htmlToJson.parse(res.body, ['.left', function ($item){
-                return $item.text();
+                //console.log(($item));
+                var arr = ($item).children();
+                if(arr === null)
+                    return;
+                if(arr[0].attribs !== null)
+                    console.log(arr[0].attribs.href);
+                //console.log(($item).find('a').text);
+                console.log(($item).children().text());
+
+                return $item.children().text();
             }])
                 .done(function (items){
                     console.log(items);
@@ -32,18 +41,14 @@ var c = new Crawler({
                     console.log(err);
                 });
 
-            htmlToJson.parse(res.body,)
+
         }
     }
 });
 
-// c.queue({
-//     html : '<td class="left">'
-// });
-
 c.queue({
     url : 'http://www.ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview&_EXT_MIRRORBBS_sCategory2=%EA%B5%AD%EC%A0%9C%EA%B5%90%EB%A5%98',
-    parameter1 : 'left'
+    //parameter1 : 'left'
 
 });
 
